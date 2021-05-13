@@ -5,7 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="material-design-lite_custom.css">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="sub/http-live-player.js"></script>
+  <script src="button.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="main.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   <title>Chemist</title>
 </head>
@@ -31,18 +37,152 @@
     <div class="mdl-layout__drawer">
       <span class="mdl-layout-title">Chemist</span>
       <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="">Demonstration</a>
-        <a class="mdl-navigation__link" href="">Program</a>
-        <a class="mdl-navigation__link" href="">About / Help</a>
+        <a class="mdl-navigation__link" id="SIDEBAR_ITEM_demonstration">Demonstration</a>
+        <a class="mdl-navigation__link">Program</a>
+        <a class="mdl-navigation__link">About / Help</a>
       </nav>
     </div>
     <main class="mdl-layout__content">
       <div class="page-content">
-        
+        <div id="WRAPPER">
+          <div id="DISPLAY" style="width:60%">
+            <canvas id="CAMERA" style="width:100%">
+              
+            </canvas>
+          </div>
+          <div id="CONTROL" style="height:100%">
+            <!--
+            
+            -->
+            <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs" id="CONTROL_TABS">
+              <header class="mdl-layout__header">
+                <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                  <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Environment</a>
+                  <a href="#fixed-tab-2" class="mdl-layout__tab">Left Arm</a>
+                  <a href="#fixed-tab-3" class="mdl-layout__tab">Right Arm</a>
+                </div>
+              </header>
+              <main class="mdl-layout__content">
+                <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+                  <div class="page-content">
+                    <!-- PAGE CONTENT 1 BEGIN -->
+                    <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                      <div class="mdl-card__title">
+                        <h2 class="mdl-card__title-text">Welcome!</h2>
+                      </div>
+                      <div class="mdl-card__supporting-text">
+                        First time here? Are you ready to conduct your first experiment?
+                      </div>
+                      <div class="mdl-card__actions mdl-card--border">
+                        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick=promptDemonstrationExperiment()>
+                          Get Started
+                        </a>
+                      </div>
+                      <div class="mdl-card__menu">
+                        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                          <i class="material-icons">share</i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- ACTIONS BEGIN -->
+                    <ul class="demo-list-two mdl-list">
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <span>Reset</span>
+                          <span class="mdl-list__item-sub-title">Reset whole environment</span>
+                        </span>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick=reset()>
+                          Reset
+                        </button>
+                      </li>
+                    </ul>
+                    <!-- ACTIONS END -->
+                    <!-- PAGE CONTENT 1 END -->
+                  </div>
+                </section>
+                <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+                  <div class="page-content">
+                    <!-- ACTIONS BEGIN -->
+                    <ul class="demo-list-two mdl-list">
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <span>Hold</span>
+                          <span class="mdl-list__item-sub-title">Take hold of a container</span>
+                        </span>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick=LeftArm.promptHold()>
+                          Select
+                        </button>
+                      </li>
+                    </ul>
+                    <!-- ACTIONS END -->
+                    
+                  </div>
+                </section>
+                <section class="mdl-layout__tab-panel" id="fixed-tab-3">
+                  <div class="page-content"><!-- Your content goes here --></div>
+                </section>
+              </main>
+            </div>
+            <!--
+            
+            -->
+            
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
 </body>
+
+<dialog id="DIALOG_selectDemonstration" class="mdl-dialog">
+  <h3 class="mdl-dialog__title">Demonstration</h3>
+  <div class="mdl-dialog__content">
+    <p>
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
+        <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
+        <span class="mdl-radio__label">\(\text{CaCO}_3\) with \(\text{HCl}\)</span>
+      </label>
+      <br>
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
+        <input type="radio" id="option-2" class="mdl-radio__button" name="options" value="2">
+        <span class="mdl-radio__label">\(\text{CuSO}_4\) with \(\text{NaOH}\)</span>
+      </label>
+      <br>
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
+        <input type="radio" id="option-3" class="mdl-radio__button" name="options" value="3">
+        <span class="mdl-radio__label">Titration</span>
+      </label>
+    </p>
+  </div>
+  <div class="mdl-dialog__actions">
+    <button type="button" class="mdl-button ok" id="DIALOG_selectDemonstration_BUTTON_ok">OK</button>
+  </div>
+  <script>
+    // OK button clears dialog
+    document.getElementById("DIALOG_selectDemonstration_BUTTON_ok").onclick = function() {
+      DIALOG_selectDemonstration.close();
+    }
+  </script>
+</dialog>
+<script>
+  // See Camera
+  canvas = document.getElementById("CAMERA");
+  var wsavc = new WSAvcPlayer(canvas, "webgl");
+  wsavc.connect("ws://" + "192.168.1.3" + ":8080");
+  // Select experiment function
+  promptDemonstrationExperiment = function() {
+    DIALOG_selectDemonstration.showModal();
+  }
+  document.getElementById("SIDEBAR_ITEM_demonstration").onclick = function() {
+      promptDemonstrationExperiment();
+    }
+  document.getElementById("CONTROL").style = "background:#ddd";
+  // Left Arm
+  LeftArm = {};
+  LeftArm.promptHold = function() {
+    
+  }
+</script>
 
 </html>
