@@ -7,11 +7,15 @@ const Safety = {
   "extremely_dangerous": 4
 };
 
+const Elements =
+
 const Chemicals = [
   {
     "name": "Sodium hydroxide",
     "formula": "\\(\\text{NaOH}\\)",
     "safety": Safety.danger,
+    "state": "Liquid",
+    "enabled": true,
     "max": 3,
     "step": 0.5
   },
@@ -19,6 +23,8 @@ const Chemicals = [
     "name": "Cupric sulfate",
     "formula": "\\(\\text{CuSO}_4\\)",
     "safety": Safety.moderate,
+    "state": "Liquid",
+    "enabled": true,
     "max": 3,
     "step": 0.5
   },
@@ -26,6 +32,8 @@ const Chemicals = [
     "name": "Hydrochloric acid",
     "formula": "\\(\\text{HCl}\\)",
     "safety": Safety.dangerous,
+    "state": "Liquid",
+    "enabled": false,
     "max": 3,
     "step": 0.25
   },
@@ -33,6 +41,8 @@ const Chemicals = [
     "name": "Calcium carbonate",
     "formula": "\\(\\text{CaCO}_3\\)",
     "safety": Safety.safe,
+    "state": "Solid",
+    "enabled": true,
     "max": 5,
     "step": 1,
   },
