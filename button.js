@@ -1,5 +1,5 @@
 "use strict"
-const   baseSpeed       = (10.0 / 20.0),
+const   baseSpeed       = (10.0 / 10.0),
     liftSpeed       = (18.0 / 30.0),
     rotationSpeed   = (180.0 / 6.0),
     timeDelta       = -100;

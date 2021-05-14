@@ -351,7 +351,53 @@
     <script>
       document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
         DIALOG_confirmReset.close();
-        notify("Reset in process")
+        notify("Reset in process");
+        var timeout = 0;
+        if (State.kun.environment.isWorkState) {
+          registerEvent("turnToStorageArea")
+          State = turnToStorageArea(State);
+          timeout = State.time;
+        }
+        setTimeout(function() {
+          State.kun.environment.isWorkState = false;
+          timeout = 0;
+          if (State.kun.leftArm.holding) {
+            if (State.kun.leftArm.holding == "tube") {
+              registerEvent("leftHandReturnTube")
+              State = leftHandReturnTube(State);
+              timeout = State.time;
+            } else if (State.kun.leftArm.holding == "flask") {
+              registerEvent("leftHandReturnFlask")
+              State = leftHandReturnFlask(State);
+              timeout = State.time;
+            } else if (State.kun.leftArm.holding == "beaker") {
+              notify("Cannot handle beaker in left arm")
+            }
+          }
+          setTimeout(function() {
+            State.kun.leftArm.holding = undefined;
+            State.kun.leftArm.isEmpty = true;
+            timeout = 0;
+            if (State.kun.rightArm.holding) {
+              if (State.kun.rightArm.holding == "tube") {
+                registerEvent("rightHandReturnTube");
+                State = rightHandReturnTube(State);
+                timeout = State.time;
+              } else if (State.kun.rightArm.holding == "flask") {
+                notify("Cannot handle flask in right arm")
+              } else if (State.kun.rightArm.holding == "beaker") {
+                registerEvent("rightHandReturnBeaker");
+                State = rightHandReturnBeaker(State);
+                timeout = State.time;
+              }
+            }
+            setTimeout(function() {
+              State.kun.rightArm.holding = undefined;
+              State.kun.rightArm.isEmpty = true;
+              notify("Reset completed")
+            }, timeout * 1000)
+          }, timeout * 1000)
+        }, timeout * 1000)
       }
       document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
         DIALOG_confirmReset.close();
@@ -474,7 +520,6 @@
         socketSend(command)
       }
     }
-    
     OnClick.Environment.Reset = function() {
       DIALOG_confirmReset.showModal();
     }
@@ -897,6 +942,10 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
               State.kun.leftArm.isObserved = false
+              document.getElementById("CAMERA").style = "display: block"
+              document.getElementById("HDCAMERA").style = "display: none"
+              document.getElementById("THERMAL").style = "display: none"
+              State.kun.environment.display = "camera"
             }, State.time * 1000)
           } else {
             registerEvent("HDCameraBeginWatchTube");
@@ -904,6 +953,10 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
               State.kun.leftArm.isObserved = true
+              document.getElementById("CAMERA").style = "display: none"
+              document.getElementById("HDCAMERA").style = "display: block"
+              document.getElementById("THERMAL").style = "display: none"
+              State.kun.environment.display = "hdcamera"
             }, State.time * 1000)
           }
         }, State * 1000)
