@@ -129,18 +129,20 @@
                             </button>
                           </span>
                         </li>
-                        <!-- ACTION: WORKSTATE -->
+                        <!-- ACTION: SET DISPLAY -->
                         <li class="mdl-list__item mdl-list__item--two-line">
                           <span class="mdl-list__item-primary-content">
-                            <span>Set working state
+                            <span>Set display
                             </span>
-                            <span class="mdl-list__item-sub-title">I do not know how to write a description
+                            <span class="mdl-list__item-sub-title">Select video stream on the left
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
-                            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="SWITCH-workstate">
-                              <input type="checkbox" id="SWITCH-workstate" class="mdl-switch__input" onclick=OnClick.Environment.SwitchWorkstate()>
-                            </label>
+                            <span class="mdl-list__item-secondary-action">
+                              <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--raised mdl-button--colored" onclick=OnClick.Environment.ToggleDisplay()>
+                                Toggle
+                              </button>
+                            </span>
                           </span>
                         </li>
                       </ul>
@@ -509,32 +511,68 @@
         DIALOG_forcePass.showModal();
         return;
       }
-      if (item == "tube") {
-        if (!State.kun.leftArm.holding) {
-          registerEvent("leftHandGetTube")
-          State = leftHandGetTube(State)
-          console.log("Timeout: " + State.time)
-          setTimeout(function() {
-            State.kun.leftArm.holding = "tube"
-            // notify("Task completed")
-          }, State.time * 1000)
-        } else {
-          notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+      if (State.kun.environment.isWorkState) {
+        registerEvent("turnToStorageArea")
+        State = turnToStorageArea(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.environment.isWorkState = false;
+          if (item == "tube") {
+            if (!State.kun.leftArm.holding) {
+              registerEvent("leftHandGetTube")
+              State = leftHandGetTube(State)
+              console.log("Timeout: " + State.time)
+              setTimeout(function() {
+                State.kun.leftArm.holding = "tube"
+                // notify("Task completed")
+              }, State.time * 1000)
+            } else {
+              notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+            }
+          } else if (item == "flask") {
+            if (!State.kun.leftArm.holding) {
+              registerEvent("leftHandGetFlask");
+              State.kun.others.lastOperation = Date.now()
+              State = leftHandGetFlask(State)
+              console.log("Timeout: " + State.time)
+              setTimeout(function() {
+                State.kun.leftArm.holding = "flask"
+              }, State.time * 1000)
+            } else {
+              notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+            }
+          } else if (item == "beaker") {
+            future();
+          }
+        }, State.time * 1000)
+      } else {
+        if (item == "tube") {
+          if (!State.kun.leftArm.holding) {
+            registerEvent("leftHandGetTube")
+            State = leftHandGetTube(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.leftArm.holding = "tube"
+              // notify("Task completed")
+            }, State.time * 1000)
+          } else {
+            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+          }
+        } else if (item == "flask") {
+          if (!State.kun.leftArm.holding) {
+            registerEvent("leftHandGetFlask");
+            State.kun.others.lastOperation = Date.now()
+            State = leftHandGetFlask(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.leftArm.holding = "flask"
+            }, State.time * 1000)
+          } else {
+            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+          }
+        } else if (item == "beaker") {
+          future();
         }
-      } else if (item == "flask") {
-        if (!State.kun.leftArm.holding) {
-          registerEvent("leftHandGetFlask");
-          State.kun.others.lastOperation = Date.now()
-          State = leftHandGetFlask(State)
-          console.log("Timeout: " + State.time)
-          setTimeout(function() {
-            State.kun.leftArm.holding = "flask"
-          }, State.time * 1000)
-        } else {
-          notify("Left arm is holding " + State.kun.leftArm.holding + " already")
-        }
-      } else if (item == "beaker") {
-        future();
       }
     }
     OnClick.RightArm.Hold = function(item) {
@@ -543,31 +581,69 @@
         DIALOG_forcePass.showModal();
         return;
       }
-      if (item == "tube") {
-        if (!State.kun.rightArm.holding) {
-          registerEvent("rightHandGetTube")
-          State = rightHandGetTube(State)
-          console.log("Timeout: " + State.time)
-          setTimeout(function() {
-            State.kun.rightArm.holding = "tube"
-            // notify("Task completed")
-          }, State.time * 1000)
-        } else {
-          notify("Right arm is holding " + State.kun.rightArm.holding + " already")
-        }
-      } else if (item == "flask") {
-        future();
-      } else if (item == "beaker") {
-        if (!State.kun.rightArm.holding) {
-          registerEvent("rightHandGetBeaker")
-          State = rightHandGetTube(State)
-          console.log("Timeout: " + State.time)
-          setTimeout(function() {
-            State.kun.rightArm.holding = "beaker"
-            // notify("Task completed")
-          }, State.time * 1000)
-        } else {
-          notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+      if (State.kun.environment.isWorkState) {
+        registerEvent("turnToStorageArea")
+        State = turnToStorageArea(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.environment.isWorkState = false;
+          document.getElementById("SWITCH-workstate").checked = false;
+          if (item == "tube") {
+            if (!State.kun.rightArm.holding) {
+              registerEvent("rightHandGetTube")
+              State = rightHandGetTube(State)
+              console.log("Timeout: " + State.time)
+              setTimeout(function() {
+                State.kun.rightArm.holding = "tube"
+                // notify("Task completed")
+              }, State.time * 1000)
+            } else {
+              notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+            }
+          } else if (item == "flask") {
+            future();
+          } else if (item == "beaker") {
+            if (!State.kun.rightArm.holding) {
+              registerEvent("rightHandGetBeaker")
+              State = rightHandGetTube(State)
+              console.log("Timeout: " + State.time)
+              setTimeout(function() {
+                State.kun.rightArm.holding = "beaker"
+                // notify("Task completed")
+              }, State.time * 1000)
+            } else {
+              notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+            }
+          }
+          
+        }, State * 1000)
+      } else {
+        if (item == "tube") {
+          if (!State.kun.rightArm.holding) {
+            registerEvent("rightHandGetTube")
+            State = rightHandGetTube(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.rightArm.holding = "tube"
+              // notify("Task completed")
+            }, State.time * 1000)
+          } else {
+            notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+          }
+        } else if (item == "flask") {
+          future();
+        } else if (item == "beaker") {
+          if (!State.kun.rightArm.holding) {
+            registerEvent("rightHandGetBeaker")
+            State = rightHandGetTube(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.rightArm.holding = "beaker"
+              // notify("Task completed")
+            }, State.time * 1000)
+          } else {
+            notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+          }
         }
       }
     }
@@ -588,34 +664,73 @@
       if (t <= 0) {
         return;
       }
-      if (id == 1) {
-        // NaOH
-        // 1. leftHandReachOutGetNaOH
-        registerEvent("leftHandReachOutGetNaOH");
-        State = leftHandReachOutGetNaOH(State);
+      if (State.kun.environment.isWorkState) {
+        registerEvent("turnToStorageArea")
+        State = turnToStorageArea(State);
         console.log("Timeout: " + State.time);
         setTimeout(function() {
-          // 2. dropNaOH
-          registerEvent("dropNaOH[param1="+t+"]");
-          State = dropNaOH(State, t);
-          console.log("Timeout: " + State.time);
-          setTimeout(function() {
-            State.kun.rightArm.isEmpty = false;
-            // 3. leftHandFinishGetNaOH
-            registerEvent("leftHandFinishGetNaOH");
-            State = leftHandFinishGetNaOH(State);
+          State.kun.environment.isWorkState = false;
+          document.getElementById("SWITCH-workstate").checked = false;
+          if (id == 1) {
+            // NaOH
+            // 1. leftHandReachOutGetNaOH
+            registerEvent("leftHandReachOutGetNaOH");
+            State = leftHandReachOutGetNaOH(State);
             console.log("Timeout: " + State.time);
             setTimeout(function() {
-              console.log("Completed Left->NaOH");
+              // 2. dropNaOH
+              registerEvent("dropNaOH[param1="+t+"]");
+              State = dropNaOH(State, t);
+              console.log("Timeout: " + State.time);
+              setTimeout(function() {
+                State.kun.rightArm.isEmpty = false;
+                // 3. leftHandFinishGetNaOH
+                registerEvent("leftHandFinishGetNaOH");
+                State = leftHandFinishGetNaOH(State);
+                console.log("Timeout: " + State.time);
+                setTimeout(function() {
+                  console.log("Completed Left->NaOH");
+                }, State.time * 1000)
+              }, State.time * 1000)
+            }, State.time * 1000)
+          } else if (id == 2) {
+            future();
+          } else if (id == 3) {
+            future();
+          } else if (id == 4) {
+            future();
+          }
+        }, State.time * 1000);
+      } else {
+        if (id == 1) {
+          // NaOH
+          // 1. leftHandReachOutGetNaOH
+          registerEvent("leftHandReachOutGetNaOH");
+          State = leftHandReachOutGetNaOH(State);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+            // 2. dropNaOH
+            registerEvent("dropNaOH[param1="+t+"]");
+            State = dropNaOH(State, t);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              State.kun.rightArm.isEmpty = false;
+              // 3. leftHandFinishGetNaOH
+              registerEvent("leftHandFinishGetNaOH");
+              State = leftHandFinishGetNaOH(State);
+              console.log("Timeout: " + State.time);
+              setTimeout(function() {
+                console.log("Completed Left->NaOH");
+              }, State.time * 1000)
             }, State.time * 1000)
           }, State.time * 1000)
-        }, State.time * 1000)
-      } else if (id == 2) {
-        future();
-      } else if (id == 3) {
-        future(); 
-      } else if (id == 4) {
-        future();
+        } else if (id == 2) {
+          future();
+        } else if (id == 3) {
+          future(); 
+        } else if (id == 4) {
+          future();
+        }
       }
     }
     OnClick.RightArm.Acquire = function(id) {
@@ -725,6 +840,7 @@
         console.log("Timeout: " + State.time);
         setTimeout(function() {
           State.kun.environment.isWorkState = true;
+          document.getElementById("SWITCH-workstate").checked = true;
           registerEvent("mixLiquid");
           State = mixLiquid(State);
           console.log("Timeout: " + State.time);

@@ -11,6 +11,7 @@ var State = {
     },
     "environment": {
       "isWorkState": false,
+      "display": "camera"
     },
     "leftArm": {
       "holding": undefined,
