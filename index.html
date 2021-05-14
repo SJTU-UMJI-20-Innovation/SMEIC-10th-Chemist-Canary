@@ -6,12 +6,8 @@
     <link rel="stylesheet" href="Assets/material-icons.css">
     <link rel="stylesheet" href="material-design-lite_custom.css">
     <link rel="stylesheet" href="Assets/material-main.css">
-    <script src="Assets/polyfill-min.js">
-    </script>
-    <script src="sub/http-live-player.js">
-    </script>
-    <script src="button.js">
-    </script>
+    <script src="Assets/polyfill-min.js"></script>
+    <script src="button.js"></script>
     <script>
       window.MathJax = {
         tex: {
@@ -68,8 +64,9 @@
         <div class="page-content">
           <div id="WRAPPER">
             <div id="DISPLAY" style="width:60%">
-              <canvas id="CAMERA" style="width:100%">
-              </canvas>
+              <canvas id="CAMERA" style="width:100%"></canvas>
+              <canvas id="HDCAMERA" style="width:100%"></canvas>
+              <canvas id="THERMAL" width="640" height="480"></canvas>
             </div>
             <div id="CONTROL" style="height:100%">
               <!-- Snackbar -->
@@ -383,11 +380,23 @@
   </dialog>
   <script src="config.js">
   </script>
+  <script src="sub/thermal-view.js"></script>
+  <script src="sub/http-live-player.js"></script>
   <script>
     // Set Camera
     var canvas = document.getElementById("CAMERA");
     var wsavc = new WSAvcPlayer(canvas, "webgl");
-    wsavc.connect("ws://" + "192.168.1.3" + ":8080");
+    wsavc.connect("ws://192.168.1.3:8080");
+    // Set HD Camera
+    var canvasHD = document.getElementById("HDCAMERA");
+    var wsavchd = new WSAvcPlayer(canvasHD, "webgl");
+    wsavchd.connect("ws://192.168.1.2:8080");
+    // Set Thermal Camera
+    var thermalCanvas = InitThermalView('THERMAL', 16, 12);
+    var thermalSocket = new WebSocket('ws://192.168.1.2:2053');
+    thermalSocket.addEventListener('message', (event) => {
+      RenderThermalView(thermalCanvas, JSON.parse(event.data));
+    })
     // Select experiment function
     promptDemonstrationExperiment = function() {
       DIALOG_selectDemonstration.showModal();
@@ -403,9 +412,16 @@
       };
       snackbarContainer.MaterialSnackbar.showSnackbar(data);
     }
+    future = function() {
+      notify("Not yet implemented", 0.5)
+    }
     // Define status query function
     queryStatus = function() {
-      return true;
+      if (Date.now() > State.kun.others.lastOperation + State.time * 1000) {
+        return true;
+      } else {
+        return false;
+      }
     }
     // Define OnClick callbacks
     OnClick = {
@@ -439,13 +455,40 @@
         notify("Please wait for previous task");
       }
       else {
-        notify("RUN: " + item, 2);
+        if (item == "tube") {
+          if (!State.kun.leftArm.holding) {
+            State.kun.others.lastOperation = Date.now()
+            State = leftHandGetTube(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.leftArm.holding = "tube"
+              notify("Holding tube now!")
+            }, State.time * 1000)
+          } else {
+            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+          }
+        } else if (item == "flask") {
+          if (!State.kun.leftArm.holding) {
+            State.kun.others.lastOperation = Date.now()
+            State = leftHandGetFlask(State)
+            console.log("Timeout: " + State.time)
+            setTimeout(function() {
+              State.kun.leftArm.holding = "flask"
+              notify("Holding flask now!")
+            }, State.time * 1000)
+          } else {
+            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+          }
+          //
+        } else if (item == "beaker") {
+          future();
+        }
       }
     }
     OnClick.RightArm.Hold = function(item) {
       var available = queryStatus();
       if (!available) {
-        notify("Please wait for previous task");
+        notify("Please wait for the previous task");
       }
       else {
         notify("RUN: " + item, 2);
@@ -514,6 +557,5 @@
     document.getElementById("SIDEBAR_ITEM_scripting").onclick = function() {
       DIALOG_inputCommand.showModal();
     };
-    document.getElementById("CONTROL").style = "background:#ddd";
   </script>
 </html>

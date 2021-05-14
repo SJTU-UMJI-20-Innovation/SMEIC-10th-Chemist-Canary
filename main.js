@@ -1,4 +1,5 @@
 var State = {
+  "time": 0,
   "leftRotate": 0,
   "rightRotate": 0,
   "leftLift": 0,
@@ -97,6 +98,8 @@ function socketSendStrList(_messageTextList) {
   var list = _messageTextList.split("\n");
   socketSendList(list);
 }
+
+socket = socketInit();
 
 // function loadLocalization(lang) {
 //   console.log("CALLED:\tloadLocalization")
