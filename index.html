@@ -77,7 +77,8 @@
                 </button>
               </div>
               <!-- Main -->
-              <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect" id="CONTROL_TABS">
+              <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs" id="CONTROL_TABS">
+                <header class="mdl-layout__header">
                   <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
                     <a href="#fixed-tab-1" class="mdl-layout__tab is-active">Environment
                     </a>
@@ -86,8 +87,9 @@
                     <a href="#fixed-tab-3" class="mdl-layout__tab">Right Arm
                     </a>
                   </div>
+                </header>
                 <main class="mdl-layout__content" style="padding:10px">
-                  <div class="mdl-tabs__panel is-active" id="fixed-tab-1">
+                  <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
                     <div class="page-content">
                       <!-- PAGE CONTENT 1 BEGIN -->
                       <!-- Welcome -->
@@ -145,8 +147,8 @@
                       <!-- ACTIONS END -->
                       <!-- PAGE CONTENT 1 END -->
                     </div>
-                  </div>
-                  <div class="mdl-tabs__panel" id="fixed-tab-2">
+                  </section>
+                  <section class="mdl-layout__tab-panel" id="fixed-tab-2">
                     <div class="page-content">
                       <!-- ACTIONS BEGIN -->
                       <!-- ACTION: HOLD -->
@@ -230,8 +232,8 @@
                       </li>
                       <!-- ACTIONS END -->
                     </div>
-                  </div>
-                  <div class="mdl-tabs__panel" id="fixed-tab-3">
+                  </section>
+                  <section class="mdl-layout__tab-panel" id="fixed-tab-3">
                     <div class="page-content">
                       <!-- ACTIONS BEGIN -->
                       <!-- ACTION: HOLD -->
@@ -287,7 +289,7 @@
                       </ul>
                       <!-- ACTIONS END -->
                     </div>
-                  </div>
+                  </section>
                 </main>
               </div>
 
@@ -377,26 +379,27 @@
       }
     </script>
   </dialog>
-  <dialog id="DIALOG_confirmReset" class="mdl-dialog">
-    <h3 class="mdl-dialog__title">Confirm Reset</h3>
+  <dialog id="DIALOG_forcePass" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Force Pass</h3>
     <div class="mdl-dialog__content">
       <p>
-        Are you sure you want to reset?
+        The previous action may have not been completed!<br>Are you sure to skip the waiting period? You'll need to retry previous action again.
       </p>
     </div>
     <div class="mdl-dialog__actions">
-      <button type="button" class="mdl-button ok" id="DIALOG_confirmReset_BUTTON_ok">OK
+      <button type="button" class="mdl-button ok" id="DIALOG_forcePass_BUTTON_skip">Skip
       </button>
-      <button type="button" class="mdl-button close" id="DIALOG_confirmReset_BUTTON_cancel">Cancel
+      <button type="button" class="mdl-button close" id="DIALOG_forcePass_BUTTON_cancel">Cancel
       </button>
     </div>
     <script>
-      document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
-        DIALOG_confirmReset.close();
-        notify("Reset in process")
+      document.getElementById("DIALOG_forcePass_BUTTON_skip").onclick = function() {
+        DIALOG_forcePass.close();
+        State.time = 0;
+        notify("Waiting period reset");
       }
-      document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
-        DIALOG_confirmReset.close();
+      document.getElementById("DIALOG_forcePass_BUTTON_cancel").onclick = function() {
+        DIALOG_forcePass.close();
       }
     </script>
   </dialog>
@@ -490,8 +493,13 @@
       DIALOG_confirmReset.showModal();
     }
     OnClick.Environment.SwitchWorkstate = function() {
-      var checked = document.getElementById("SWITCH-workstate").checked;
-      notify(checked);
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal()
+        return
+      }
+      var checked = document.getElementById("SWITCH-workstate").checked
+      
     }
     OnClick.LeftArm.Hold = function(item) {
       var available = queryStatus();
