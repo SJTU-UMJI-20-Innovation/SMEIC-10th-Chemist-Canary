@@ -225,7 +225,7 @@
                           </span>
                         </span>
                         <span class="mdl-list__item-secondary-action">
-                          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick=OnClick.LeftArm.Mix()>
+                          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick=OnClick.LeftArm.Observe()>
                             Observe
                           </button>
                         </span>
@@ -315,8 +315,8 @@
           </span>
         </label>
         <br>
-        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
-          <input type="radio" id="option-3" class="mdl-radio__button" name="options" value="3">
+        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-3">
+          <input type="radio" id="option-3" class="mdl-radio__button" name="options" value="3" disabled>
           <span class="mdl-radio__label">Titration
           </span>
         </label>
@@ -330,29 +330,6 @@
       // OK button clears dialog
       document.getElementById("DIALOG_selectDemonstration_BUTTON_ok").onclick = function() {
         DIALOG_selectDemonstration.close();
-      }
-    </script>
-  </dialog>
-  <dialog id="DIALOG_confirmReset" class="mdl-dialog">
-    <h3 class="mdl-dialog__title">Confirm Reset</h3>
-    <div class="mdl-dialog__content">
-      <p>
-        Are you sure you want to reset?
-      </p>
-    </div>
-    <div class="mdl-dialog__actions">
-      <button type="button" class="mdl-button ok" id="DIALOG_confirmReset_BUTTON_ok">OK
-      </button>
-      <button type="button" class="mdl-button close" id="DIALOG_confirmReset_BUTTON_cancel">Cancel
-      </button>
-    </div>
-    <script>
-      document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
-        DIALOG_confirmReset.close();
-        notify("Reset in process")
-      }
-      document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
-        DIALOG_confirmReset.close();
       }
     </script>
   </dialog>
@@ -462,6 +439,12 @@
     future = function() {
       notify("Not yet implemented", 0.5)
     }
+    // Register Event
+    registerEvent = function(funcName) {
+      State.kun.others.lastOperation = Date.now();
+      console.log("PERFORMING: " + funcName);
+      notify("Performing: "+funcName)
+    }
     // Define status query function
     queryStatus = function() {
       if (Date.now() > State.kun.others.lastOperation + State.time * 1000) {
@@ -498,8 +481,27 @@
         DIALOG_forcePass.showModal()
         return
       }
-      var checked = document.getElementById("SWITCH-workstate").checked
-      
+      // No ongoing task: get current workstate
+      var workState = State.kun.environment.isWorkState
+      if (workState) {
+        // Currently workstate, do exit workstate
+        registerEvent("turnToStorageArea");
+        State = turnToStorageArea(State);
+        console.log("Timeout: " + State.time)
+        setTimeout(function() {
+          State.kun.environment.isWorkState = false;
+          // notify("Task completed")
+        }, State.time * 1000)
+      } else {
+        // Currently not workstate, do enter workstate
+        registerEvent("turnToExperimentArea");
+        State = turnToExperimentArea(State);
+        console.log("Timeout: " + State.time)
+        setTimeout(function() {
+          State.kun.environment.isWorkState = true;
+          // notify("Task completed")
+        }, State.time * 1000)
+      }
     }
     OnClick.LeftArm.Hold = function(item) {
       var available = queryStatus();
@@ -509,7 +511,7 @@
       }
       if (item == "tube") {
         if (!State.kun.leftArm.holding) {
-          State.kun.others.lastOperation = Date.now()
+          registerEvent("leftHandGetTube")
           State = leftHandGetTube(State)
           console.log("Timeout: " + State.time)
           setTimeout(function() {
@@ -521,6 +523,7 @@
         }
       } else if (item == "flask") {
         if (!State.kun.leftArm.holding) {
+          registerEvent("leftHandGetFlask");
           State.kun.others.lastOperation = Date.now()
           State = leftHandGetFlask(State)
           console.log("Timeout: " + State.time)
@@ -530,7 +533,6 @@
         } else {
           notify("Left arm is holding " + State.kun.leftArm.holding + " already")
         }
-        //
       } else if (item == "beaker") {
         future();
       }
@@ -538,11 +540,210 @@
     OnClick.RightArm.Hold = function(item) {
       var available = queryStatus();
       if (!available) {
-        notify("Please wait for the previous task");
+        DIALOG_forcePass.showModal();
+        return;
       }
-      else {
-        notify("RUN: " + item, 2);
+      if (item == "tube") {
+        if (!State.kun.rightArm.holding) {
+          registerEvent("rightHandGetTube")
+          State = rightHandGetTube(State)
+          console.log("Timeout: " + State.time)
+          setTimeout(function() {
+            State.kun.rightArm.holding = "tube"
+            // notify("Task completed")
+          }, State.time * 1000)
+        } else {
+          notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+        }
+      } else if (item == "flask") {
+        future();
+      } else if (item == "beaker") {
+        if (!State.kun.rightArm.holding) {
+          registerEvent("rightHandGetBeaker")
+          State = rightHandGetTube(State)
+          console.log("Timeout: " + State.time)
+          setTimeout(function() {
+            State.kun.rightArm.holding = "beaker"
+            // notify("Task completed")
+          }, State.time * 1000)
+        } else {
+          notify("Right arm is holding " + State.kun.rightArm.holding + " already")
+        }
       }
+    }
+    OnClick.LeftArm.Acquire = function(id) {
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal();
+        return;
+      }
+      if (!State.kun.leftArm.holding) {
+        notify("Left arm has no container");
+        return;
+      }
+      var t = Number(document.getElementById("leftarm-acquire-quantity-slider").value) / 4
+      if (t > 1) {
+        t = 1;
+      }
+      if (t <= 0) {
+        return;
+      }
+      if (id == 1) {
+        // NaOH
+        // 1. leftHandReachOutGetNaOH
+        registerEvent("leftHandReachOutGetNaOH");
+        State = leftHandReachOutGetNaOH(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          // 2. dropNaOH
+          registerEvent("dropNaOH[param1="+t+"]");
+          State = dropNaOH(State, t);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+            State.kun.rightArm.isEmpty = false;
+            // 3. leftHandFinishGetNaOH
+            registerEvent("leftHandFinishGetNaOH");
+            State = leftHandFinishGetNaOH(State);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              console.log("Completed Left->NaOH");
+            }, State.time * 1000)
+          }, State.time * 1000)
+        }, State.time * 1000)
+      } else if (id == 2) {
+        future();
+      } else if (id == 3) {
+        future(); 
+      } else if (id == 4) {
+        future();
+      }
+    }
+    OnClick.RightArm.Acquire = function(id) {
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal();
+        return;
+      }
+      if (!State.kun.rightArm.holding) {
+        notify("Right arm has no container");
+        return;
+      }
+      var t = Number(document.getElementById("rightarm-acquire-quantity-slider").value) / 4
+      if (t > 1) {
+        t = 1;
+      }
+      if (t <= 0) {
+        return;
+      }
+      if (State.kun.environment.isWorkState) {
+        registerEvent("turnToStorageArea")
+        State = turnToStorageArea(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.environment.isWorkState = false;
+          document.getElementById("SWITCH-workstate").checked = false;
+          if (id == 1) {
+            future();
+          } else if (id == 2) {
+            // CuSO4
+            // 1. rightHandReachOutGetCuSO4
+            registerEvent("rightHandReachOutGetCuSO4");
+            State = rightHandReachOutGetCuSO4(State);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              // 2. dropCuSO4
+              registerEvent("dropCuSO4[param1="+t+"]");
+              State = dropCuSO4(State, t);
+              console.log("Timeout: " + State.time);
+              setTimeout(function() {
+                State.kun.rightArm.isEmpty = false;
+                // 3. rightHandFinishGetCuSO4
+                registerEvent("rightHandFinishGetCuSO4");
+                State = rightHandFinishGetCuSO4(State);
+                console.log("Timeout: " + State.time);
+                setTimeout(function() {
+                  console.log("Completed Right->CuSO4");
+                }, State.time * 1000)
+              }, State.time * 1000)
+            }, State.time * 1000)
+          } else if (id == 3) {
+            future();
+          } else if (id == 4) {
+            future();
+          }
+        }, State.time * 1000)
+      } else {
+        if (id == 1) {
+          future();
+        } else if (id == 2) {
+          // CuSO4
+          // 1. rightHandReachOutGetCuSO4
+          registerEvent("rightHandReachOutGetCuSO4");
+          State = rightHandReachOutGetCuSO4(State);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+            // 2. dropCuSO4
+            registerEvent("dropCuSO4[param1="+t+"]");
+            State = dropCuSO4(State, t);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              State.kun.rightArm.isEmpty = false;
+              // 3. rightHandFinishGetCuSO4
+              registerEvent("rightHandFinishGetCuSO4");
+              State = rightHandFinishGetCuSO4(State);
+              console.log("Timeout: " + State.time);
+              setTimeout(function() {
+                console.log("Completed Right->CuSO4");
+              }, State.time * 1000)
+            }, State.time * 1000)
+          }, State.time * 1000)
+    
+        } else if (id == 3) {
+          future();
+        } else if (id == 4) {
+          future();
+        }
+      }
+    }
+    OnClick.LeftArm.Mix = function () {
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal();
+        return;
+      }
+      if (!State.kun.leftArm.holding) {
+        notify("Left arm has no container");
+        return;
+      }
+      if (!State.kun.rightArm.holding) {
+        notify("Right arm has no container");
+        return;
+      }
+      if (!State.kun.environment.isWorkState) {
+        registerEvent("turnToExperimentArea")
+        State = turnToExperimentArea(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.environment.isWorkState = true;
+          registerEvent("mixLiquid");
+          State = mixLiquid(State);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+          State.kun.leftArm.isEmpty = true;
+          State.kun.leftArm.isEmpty = false;
+          }, State.time * 1000)
+        }, State.time * 1000)
+      } else {
+        registerEvent("mixLiquid");
+        State = mixLiquid(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.leftArm.isEmpty = true;
+          State.kun.leftArm.isEmpty = false;
+        }, State.time * 1000)
+      }
+      
+      // mixLiquid
     }
     OnClick.LeftArm.GetChemicals = function() {
       menu = document.getElementById("leftarm-acquire-menu-1");
@@ -568,22 +769,6 @@
       // Display TeX
       MathJax.typeset()
     }
-    OnClick.RightArm.AcquireQuantityUpdate = function() {
-      var i = Number(document.getElementById("rightarm-acquire-quantity-slider").value)
-      if (i == 1) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Little";
-        document.getElementById("rightarm-acquire-menu-button").disabled = false;
-      } else if (i == 2) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Some";
-        document.getElementById("rightarm-acquire-menu-button").disabled = false;
-      } else if (i == 3) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: A lot";
-        document.getElementById("rightarm-acquire-menu-button").disabled = false;
-      } else if (i == 0) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 0";
-        document.getElementById("rightarm-acquire-menu-button").disabled = true;
-      }
-    }
     OnClick.LeftArm.AcquireQuantityUpdate = function() {
       var i = Number(document.getElementById("leftarm-acquire-quantity-slider").value)
       if (i == 1) {
@@ -600,6 +785,23 @@
         document.getElementById("leftarm-acquire-menu-button").disabled = true;
       }
     }
+    OnClick.RightArm.AcquireQuantityUpdate = function() {
+      var i = Number(document.getElementById("rightarm-acquire-quantity-slider").value)
+      if (i == 1) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Little";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 2) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Some";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 3) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: A lot";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 0) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 0";
+        document.getElementById("rightarm-acquire-menu-button").disabled = true;
+      }
+    }
+  
     // Set onclick callbacks
     document.getElementById("SIDEBAR_ITEM_demonstration").onclick = function() {
       promptDemonstrationExperiment();

@@ -2,8 +2,9 @@
 const   baseSpeed       = (10.0 / 20.0),
     liftSpeed       = (18.0 / 30.0),
     rotationSpeed   = (180.0 / 6.0),
-    timeDelta       = 0.5;
+    timeDelta       = -100;
 
+// Implemented
 function leftHandGetTube(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -41,6 +42,7 @@ function leftHandGetTube(inputState){
     return state;
 }
 
+// Implemented
 function leftHandReachOutGetNaOH(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -57,6 +59,7 @@ function leftHandReachOutGetNaOH(inputState){
     return state;
 }
 
+// Implemented
 function dropNaOH(inputState, amount){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -66,6 +69,7 @@ function dropNaOH(inputState, amount){
     return state;
 }
 
+// Implemented
 function leftHandFinishGetNaOH(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -75,6 +79,7 @@ function leftHandFinishGetNaOH(inputState){
     return state;
 }
 
+// Implemented
 function rightHandGetTube(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -111,6 +116,7 @@ function rightHandGetTube(inputState){
     return state;
 }
 
+// Implemented
 function rightHandReachOutGetCuSO4(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -127,6 +133,7 @@ function rightHandReachOutGetCuSO4(inputState){
     return state;
 }
 
+// Implemented
 function dropCuSO4(inputState, amount){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -136,6 +143,7 @@ function dropCuSO4(inputState, amount){
     return state;
 }
 
+// Implemented
 function rightHandFinishGetCuSO4(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -145,6 +153,7 @@ function rightHandFinishGetCuSO4(inputState){
     return state;
 }
 
+// Implemented
 function turnToExperimentArea(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -168,6 +177,7 @@ function turnToExperimentArea(inputState){
     return state;
 }
 
+// Implemeneted
 function mixLiquid(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -301,6 +311,7 @@ function rightHandReturnTube(inputState){
     return state;
 }
 
+// Implemented
 function rightHandGetBeaker(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -466,6 +477,7 @@ function rightHandReturnBeaker(inputState){
     return state;
 }
 
+// Implemented
 function leftHandGetFlask(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
