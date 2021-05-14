@@ -305,13 +305,13 @@
       <p>
         <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
           <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
-          <span class="mdl-radio__label">\(\text{CaCO}_3\) with \(\text{HCl}\)
+          <span class="mdl-radio__label">\(\text{CuSO}_4\) with \(\text{NaOH}\)
           </span>
         </label>
         <br>
         <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
           <input type="radio" id="option-2" class="mdl-radio__button" name="options" value="2">
-          <span class="mdl-radio__label">\(\text{CuSO}_4\) with \(\text{NaOH}\)
+          <span class="mdl-radio__label">\(\text{MnO}_2\) with \(\text{H}_2\text{O}_2\)
           </span>
         </label>
         <br>
@@ -330,6 +330,52 @@
       // OK button clears dialog
       document.getElementById("DIALOG_selectDemonstration_BUTTON_ok").onclick = function() {
         DIALOG_selectDemonstration.close();
+      }
+    </script>
+  </dialog>
+  <dialog id="DIALOG_confirmReset" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Confirm Reset</h3>
+    <div class="mdl-dialog__content">
+      <p>
+        Are you sure you want to reset?
+      </p>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button ok" id="DIALOG_confirmReset_BUTTON_ok">OK
+      </button>
+      <button type="button" class="mdl-button close" id="DIALOG_confirmReset_BUTTON_cancel">Cancel
+      </button>
+    </div>
+    <script>
+      document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
+        DIALOG_confirmReset.close();
+        notify("Reset in process")
+      }
+      document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
+        DIALOG_confirmReset.close();
+      }
+    </script>
+  </dialog>
+  <dialog id="DIALOG_confirmReset" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Confirm Reset</h3>
+    <div class="mdl-dialog__content">
+      <p>
+        Are you sure you want to reset?
+      </p>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button ok" id="DIALOG_confirmReset_BUTTON_ok">OK
+      </button>
+      <button type="button" class="mdl-button close" id="DIALOG_confirmReset_BUTTON_cancel">Cancel
+      </button>
+    </div>
+    <script>
+      document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
+        DIALOG_confirmReset.close();
+        notify("Reset in process")
+      }
+      document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
+        DIALOG_confirmReset.close();
       }
     </script>
   </dialog>
@@ -452,37 +498,35 @@
     OnClick.LeftArm.Hold = function(item) {
       var available = queryStatus();
       if (!available) {
-        notify("Please wait for previous task");
+        DIALOG_forcePass.showModal();
+        return;
       }
-      else {
-        if (item == "tube") {
-          if (!State.kun.leftArm.holding) {
-            State.kun.others.lastOperation = Date.now()
-            State = leftHandGetTube(State)
-            console.log("Timeout: " + State.time)
-            setTimeout(function() {
-              State.kun.leftArm.holding = "tube"
-              notify("Holding tube now!")
-            }, State.time * 1000)
-          } else {
-            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
-          }
-        } else if (item == "flask") {
-          if (!State.kun.leftArm.holding) {
-            State.kun.others.lastOperation = Date.now()
-            State = leftHandGetFlask(State)
-            console.log("Timeout: " + State.time)
-            setTimeout(function() {
-              State.kun.leftArm.holding = "flask"
-              notify("Holding flask now!")
-            }, State.time * 1000)
-          } else {
-            notify("Left arm is holding " + State.kun.leftArm.holding + " already")
-          }
-          //
-        } else if (item == "beaker") {
-          future();
+      if (item == "tube") {
+        if (!State.kun.leftArm.holding) {
+          State.kun.others.lastOperation = Date.now()
+          State = leftHandGetTube(State)
+          console.log("Timeout: " + State.time)
+          setTimeout(function() {
+            State.kun.leftArm.holding = "tube"
+            // notify("Task completed")
+          }, State.time * 1000)
+        } else {
+          notify("Left arm is holding " + State.kun.leftArm.holding + " already")
         }
+      } else if (item == "flask") {
+        if (!State.kun.leftArm.holding) {
+          State.kun.others.lastOperation = Date.now()
+          State = leftHandGetFlask(State)
+          console.log("Timeout: " + State.time)
+          setTimeout(function() {
+            State.kun.leftArm.holding = "flask"
+          }, State.time * 1000)
+        } else {
+          notify("Left arm is holding " + State.kun.leftArm.holding + " already")
+        }
+        //
+      } else if (item == "beaker") {
+        future();
       }
     }
     OnClick.RightArm.Hold = function(item) {

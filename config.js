@@ -14,8 +14,8 @@ const Chemicals = [
     "safety": Safety.danger,
     "state": "Liquid",
     "enabled": true,
-    "max": 3,
-    "step": 0.5
+    "max": 1,
+    "step": 0.125
   },
   {
     "name": "Cupric sulfate",
@@ -23,8 +23,8 @@ const Chemicals = [
     "safety": Safety.moderate,
     "state": "Liquid",
     "enabled": true,
-    "max": 3,
-    "step": 0.5
+    "max": 1,
+    "step": 0.125
   },
   {
     "name": "Hydrogen peroxide",
@@ -32,8 +32,8 @@ const Chemicals = [
     "safety": Safety.dangerous,
     "state": "Liquid",
     "enabled": false,
-    "max": 3,
-    "step": 0.25
+    "max": 1,
+    "step": 0.125
   },
   {
     "name": "Manganese Dioxide",
@@ -41,8 +41,8 @@ const Chemicals = [
     "safety": Safety.safe,
     "state": "Solid",
     "enabled": true,
-    "max": 5,
-    "step": 1,
+    "max": 1,
+    "step": 0.125,
   },
   
 ]
