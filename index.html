@@ -12,7 +12,17 @@
     </script>
     <script src="button.js">
     </script>
-    <script id="MathJax-script" async src="Assets/mathjax.js">
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="Assets/tex-svg.js">
     </script>
     <script src="main.js">
     </script>
@@ -302,20 +312,23 @@
   </dialog>
   <dialog id="DIALOG_inputCommand">
     <h3 class="mdl-dialog__title">Command-line</h3>
-    <form action="#">
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="cmd">
-        <label class="mdl-textfield__label" for="cmd">Command...</label>
-      </div>
-    </form>
+    <div class="mdl-dialog__content">
+      <form action="#">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="TEXTFIELD_cmd">
+          <label class="mdl-textfield__label" for="cmd">Command...</label>
+        </div>
+      </form>
+    </div>
     <div class="mdl-dialog__actions">
-      <button type="button" class="mdl-button ok" id="DIALOG_inputCommand_BUTTON_execute" onclick=OnClick.Others.SendCommand();>Execute
+      <button type="button" class="mdl-button ok" id="DIALOG_inputCommand_BUTTON_execute">Execute
       </button>
     </div>
     <script>
       // OK button clears dialog
       document.getElementById("DIALOG_inputCommand_BUTTON_execute").onclick = function() {
         DIALOG_inputCommand.close();
+        OnClick.Others.SendCommand(document.getElementById("TEXTFIELD_cmd").value);
       }
     </script>
   </dialog>
@@ -358,9 +371,8 @@
       "RightArm": {
       }
     };
-    OnClick.Others.SendCommand = function() {
-      
-      
+    OnClick.Others.SendCommand = function(command) {
+      notify("Executing: " + command)
     }
     OnClick.Environment.SwitchWorkstate = function() {
       var checked = document.getElementById("SWITCH-workstate").checked;

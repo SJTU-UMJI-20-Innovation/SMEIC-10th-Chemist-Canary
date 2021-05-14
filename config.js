@@ -7,8 +7,6 @@ const Safety = {
   "extremely_dangerous": 4
 };
 
-const Elements =
-
 const Chemicals = [
   {
     "name": "Sodium hydroxide",
