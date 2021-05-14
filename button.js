@@ -351,6 +351,7 @@ function rightHandGetBeaker(inputState){
     return state;
 }
 
+// Implemented
 function rightHandReachOutGetH2O2(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -369,6 +370,7 @@ function rightHandReachOutGetH2O2(inputState){
     return state;
 }
 
+// Implemented
 function dropH2O2(inputState, amount){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -378,6 +380,7 @@ function dropH2O2(inputState, amount){
     return state;
 }
 
+// Implemented
 function rightHandFinishGetH2O2(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -390,6 +393,7 @@ function rightHandFinishGetH2O2(inputState){
     return state;
 }
 
+// Implemented
 function rightHandReachOutGetMnO2(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -410,6 +414,7 @@ function rightHandReachOutGetMnO2(inputState){
     return state;
 }
 
+// Implemented
 function dropMnO2(inputState, amount){
     var {time, ...state} = inputState;
     state.time = 0;
