@@ -27,8 +27,8 @@ const Chemicals = [
     "step": 0.5
   },
   {
-    "name": "Hydrochloric acid",
-    "formula": "\\(\\text{HCl}\\)",
+    "name": "Hydrogen peroxide",
+    "formula": "\\(\\text{H}_2\\text{O}_2\\)",
     "safety": Safety.dangerous,
     "state": "Liquid",
     "enabled": false,
@@ -36,8 +36,8 @@ const Chemicals = [
     "step": 0.25
   },
   {
-    "name": "Calcium carbonate",
-    "formula": "\\(\\text{CaCO}_3\\)",
+    "name": "Manganese Dioxide",
+    "formula": "\\(\\text{MnO}_2\\)",
     "safety": Safety.safe,
     "state": "Solid",
     "enabled": true,

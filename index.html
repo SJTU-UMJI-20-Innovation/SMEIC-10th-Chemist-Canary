@@ -52,6 +52,7 @@
           </div>
         </div>
       </header>
+      
       <div class="mdl-layout__drawer">
         <span class="mdl-layout-title">Chemist
         </span>
@@ -126,7 +127,7 @@
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" onclick=OnClick.Environment.Reset()>
+                            <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--raised mdl-button--accent" onclick=OnClick.Environment.Reset()>
                             Reset
                             </button>
                           </span>
@@ -177,23 +178,21 @@
                             </li>
                           </ul>
                         </li>
-                      </ul>
                       <!-- ACTION: ACQUIRE -->
-                      <ul class="demo-list-two mdl-list">
                         <li class="mdl-list__item mdl-list__item--two-line">
                           <span class="mdl-list__item-primary-content">
                             <span>Acquire
                             </span>
-                            <span class="mdl-list__item-sub-title">Add substance into the holding container
+                            <span class="mdl-list__item-sub-title" id="leftarm-acquire-quantity-display">Amount: Little
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
-                            <button id="menu-leftarm-acquire" class="mdl-button mdl-js-button mdl-button--icon" onclick=OnClick.LeftArm.GetChemicals()>
-                              <i class="material-icons">more_vert
-                            </i>
+                            <button id="leftarm-acquire-menu-button" class="mdl-button mdl-js-button mdl-button--icon" onclick=OnClick.LeftArm.GetChemicals()>
+                              <i class="material-icons">add
+                              </i>
                             </button>
                           </span>
-                          <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="menu-leftarm-acquire">
+                          <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="leftarm-acquire-menu-button">
                             <li id="leftarm-acquire-menu-1" class="mdl-menu__item" onclick=OnClick.LeftArm.Acquire(1)>
                             </li>
                             <li id="leftarm-acquire-menu-2" class="mdl-menu__item" onclick=OnClick.LeftArm.Acquire(2)>
@@ -204,7 +203,22 @@
                             </li>
                           </ul>
                         </li>
+                        <input class="mdl-slider mdl-js-slider" id="leftarm-acquire-quantity-slider" type="range" min="0" max="3" value="1" onchange=OnClick.LeftArm.AcquireQuantityUpdate()>
                       </ul>
+                      <!-- ACTION: MIX -->
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <span>Mix to right arm
+                          </span>
+                          <span class="mdl-list__item-sub-title">Tilt the container to mix with right arm
+                          </span>
+                        </span>
+                        <span class="mdl-list__item-secondary-action">
+                          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick=OnClick.LeftArm.Mix()>
+                            Mix
+                          </button>
+                        </span>
+                      </li>
                       <!-- ACTIONS END -->
                     </div>
                   </section>
@@ -235,23 +249,21 @@
                             </li>
                           </ul>
                         </li>
-                      </ul>
                       <!-- ACTION: ACQUIRE -->
-                      <ul class="demo-list-two mdl-list">
                         <li class="mdl-list__item mdl-list__item--two-line">
                           <span class="mdl-list__item-primary-content">
                             <span>Acquire
                               </span>
-                            <span class="mdl-list__item-sub-title">Add substance into the holding container
+                            <span class="mdl-list__item-sub-title" id="rightarm-acquire-quantity-display">Amount: Little
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
-                            <button id="menu-rightarm-acquire" class="mdl-button mdl-js-button mdl-button--icon" onclick=OnClick.RightArm.GetChemicals()>
-                              <i class="material-icons">more_vert
+                            <button id="rightarm-acquire-menu-button" class="mdl-button mdl-js-button mdl-button--icon" onclick=OnClick.RightArm.GetChemicals()>
+                              <i class="material-icons">add
                             </i>
                             </button>
                           </span>
-                          <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="menu-rightarm-acquire">
+                          <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="rightarm-acquire-menu-button">
                             <li id="rightarm-acquire-menu-1" class="mdl-menu__item" onclick=OnClick.RightArm.Acquire(1)>
                             </li>
                             <li id="rightarm-acquire-menu-2" class="mdl-menu__item" onclick=OnClick.RightArm.Acquire(2)>
@@ -262,14 +274,14 @@
                             </li>
                           </ul>
                         </li>
+                        <input class="mdl-slider mdl-js-slider" id="rightarm-acquire-quantity-slider" type="range" min="0" max="3" value="1" onchange=OnClick.RightArm.AcquireQuantityUpdate()>
                       </ul>
                       <!-- ACTIONS END -->
                     </div>
                   </section>
                 </main>
               </div>
-              <!--
--->
+
             </div>
           </div>
         </div>
@@ -307,6 +319,29 @@
       // OK button clears dialog
       document.getElementById("DIALOG_selectDemonstration_BUTTON_ok").onclick = function() {
         DIALOG_selectDemonstration.close();
+      }
+    </script>
+  </dialog>
+  <dialog id="DIALOG_confirmReset" class="mdl-dialog">
+    <h3 class="mdl-dialog__title">Confirm Reset</h3>
+    <div class="mdl-dialog__content">
+      <p>
+        Are you sure you want to reset?
+      </p>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button ok" id="DIALOG_confirmReset_BUTTON_ok">OK
+      </button>
+      <button type="button" class="mdl-button close" id="DIALOG_confirmReset_BUTTON_cancel">Cancel
+      </button>
+    </div>
+    <script>
+      document.getElementById("DIALOG_confirmReset_BUTTON_ok").onclick = function() {
+        DIALOG_confirmReset.close();
+        notify("Reset in process")
+      }
+      document.getElementById("DIALOG_confirmReset_BUTTON_cancel").onclick = function() {
+        DIALOG_confirmReset.close();
       }
     </script>
   </dialog>
@@ -361,18 +396,24 @@
     // Define OnClick callbacks
     OnClick = {
       "Environment": {
-      }
-      ,
+      },
       "Others": {
       },
       "LeftArm": {
-      }
-      ,
+      },
       "RightArm": {
       }
     };
     OnClick.Others.SendCommand = function(command) {
-      notify("Executing: " + command)
+      if (command == "") {
+        notify("Nothing to execute")
+      } else {
+        notify("Executing: " + command)
+        socketSend(command)
+      }
+    }
+    OnClick.Environment.Reset = function() {
+      DIALOG_confirmReset.showModal();
     }
     OnClick.Environment.SwitchWorkstate = function() {
       var checked = document.getElementById("SWITCH-workstate").checked;
@@ -419,6 +460,38 @@
       menu.innerHTML=Chemicals[3]['formula'];
       // Display TeX
       MathJax.typeset()
+    }
+    OnClick.RightArm.AcquireQuantityUpdate = function() {
+      var i = Number(document.getElementById("rightarm-acquire-quantity-slider").value)
+      if (i == 1) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Little";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 2) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Some";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 3) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: A lot";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 0) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 0";
+        document.getElementById("rightarm-acquire-menu-button").disabled = true;
+      }
+    }
+    OnClick.LeftArm.AcquireQuantityUpdate = function() {
+      var i = Number(document.getElementById("leftarm-acquire-quantity-slider").value)
+      if (i == 1) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: Little";
+        document.getElementById("leftarm-acquire-menu-button").disabled = false;
+      } else if (i == 2) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: Some";
+        document.getElementById("leftarm-acquire-menu-button").disabled = false;
+      } else if (i == 3) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: A lot";
+        document.getElementById("leftarm-acquire-menu-button").disabled = false;
+      } else if (i == 0) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 0";
+        document.getElementById("leftarm-acquire-menu-button").disabled = true;
+      }
     }
     // Set onclick callbacks
     document.getElementById("SIDEBAR_ITEM_demonstration").onclick = function() {

@@ -1,5 +1,27 @@
 State = {
-  "time": 0,
+  "leftRotate": 0,
+  "rightRotate": 0,
+  "leftLift": 0,
+  "rightLift": 0,
+  "base": 0,
+  "kun": {
+    "others": {
+      "lastOperation": 0
+    },
+    "environment": {
+      "isWorkState": false,
+    },
+    "leftArm": {
+      "holding": undefined,
+      "isEmpty": false,
+      "operationHistory": [],
+    },
+    "rightArm": {
+      "holding": undefined,
+      "isEmpty": false,
+      "operationHistory": [],
+    },
+  }
 }
 
 Experiments = [
@@ -63,19 +85,24 @@ function socketSend(_message) {
   socket.send(_message);
 }
 
-function socketBatchSend(message_list) {
+function socketSendList(_messageList) {
   console.log("CALLED:\tsocketBatchSend");
-  for (var i = 0; i < length(message_list); i++) {
-    console.log("DEBUG:\tSending " + message_list[i]);
-    socketSend(message_list[i]);
+  for (var i = 0; i < length(_messageList); i++) {
+    console.log("DEBUG:\tSending " + _messageList[i]);
+    socketSend(_messageList[i]);
   }
 }
 
-function loadLocalization(lang) {
-  console.log("CALLED:\tloadLocalization")
-  if (lang == "zh-CN" || lang == "Chinese Simplified") {
-    window.strings = JSON.parse("Localization/zh-CN.json");
-  } else if (lang == "en-US" || lang == "English (United States)") {
-    window.strings = JSON.parse("Localization/en-US.json");
-  }
+function socketSendStrList(_messageTextList) {
+  var list = _messageTextList.split("\n");
+  socketSendList(list);
 }
+
+// function loadLocalization(lang) {
+//   console.log("CALLED:\tloadLocalization")
+//   if (lang == "zh-CN" || lang == "Chinese Simplified") {
+//     window.strings = JSON.parse("Localization/zh-CN.json");
+//   } else if (lang == "en-US" || lang == "English (United States)") {
+//     window.strings = JSON.parse("Localization/en-US.json");
+//   }
+// }

@@ -1,6 +1,10 @@
 "use strict"
 
-const socket = new WebSocket('ws://192.168.1.3:2051');
+// const socket = new WebSocket('ws://192.168.1.3:2051');
+var socket = {}
+socket.send = function(str) {
+  console.log(str)
+}
 
 const baseSpeed       = (10.0 / 20.0),
       liftSpeed       = (18.0 / 30.0),
