@@ -474,9 +474,11 @@
         socketSend(command)
       }
     }
+    
     OnClick.Environment.Reset = function() {
       DIALOG_confirmReset.showModal();
     }
+    // DEPRECATED
     OnClick.Environment.SwitchWorkstate = function() {
       var available = queryStatus();
       if (!available) {
@@ -503,6 +505,24 @@
           State.kun.environment.isWorkState = true;
           // notify("Task completed")
         }, State.time * 1000)
+      }
+    }
+    OnClick.Environment.ToggleDisplay = function() {
+      if (State.kun.environment.display == "camera") {
+        document.getElementById("CAMERA").style = "display: none"
+        document.getElementById("HDCAMERA").style = "display: block"
+        document.getElementById("THERMAL").style = "display: none"
+        State.kun.environment.display = "hdcamera"
+      } else if (State.kun.environment.display == "hdcamera") {
+        document.getElementById("CAMERA").style = "display: none"
+        document.getElementById("HDCAMERA").style = "display: none"
+        document.getElementById("THERMAL").style = "display: block"
+        State.kun.environment.display = "thermal"
+      } else if (State.kun.environment.display == "thermal") {
+        document.getElementById("CAMERA").style = "display: block"
+        document.getElementById("HDCAMERA").style = "display: none"
+        document.getElementById("THERMAL").style = "display: none"
+        State.kun.environment.display = "camera"
       }
     }
     OnClick.LeftArm.Hold = function(item) {
@@ -587,7 +607,7 @@
         console.log("Timeout: " + State.time);
         setTimeout(function() {
           State.kun.environment.isWorkState = false;
-          document.getElementById("SWITCH-workstate").checked = false;
+          // document.getElementById("SWITCH-workstate").checked = false;
           if (item == "tube") {
             if (!State.kun.rightArm.holding) {
               registerEvent("rightHandGetTube")
@@ -670,7 +690,7 @@
         console.log("Timeout: " + State.time);
         setTimeout(function() {
           State.kun.environment.isWorkState = false;
-          document.getElementById("SWITCH-workstate").checked = false;
+          // document.getElementById("SWITCH-workstate").checked = false;
           if (id == 1) {
             // NaOH
             // 1. leftHandReachOutGetNaOH
@@ -756,7 +776,7 @@
         console.log("Timeout: " + State.time);
         setTimeout(function() {
           State.kun.environment.isWorkState = false;
-          document.getElementById("SWITCH-workstate").checked = false;
+          // document.getElementById("SWITCH-workstate").checked = false;
           if (id == 1) {
             future();
           } else if (id == 2) {
@@ -840,7 +860,7 @@
         console.log("Timeout: " + State.time);
         setTimeout(function() {
           State.kun.environment.isWorkState = true;
-          document.getElementById("SWITCH-workstate").checked = true;
+          // document.getElementById("SWITCH-workstate").checked = true;
           registerEvent("mixLiquid");
           State = mixLiquid(State);
           console.log("Timeout: " + State.time);
