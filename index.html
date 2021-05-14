@@ -878,8 +878,52 @@
           State.kun.leftArm.isEmpty = false;
         }, State.time * 1000)
       }
-      
-      // mixLiquid
+    }
+    OnClick.LeftArm.Observe = function () {
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal();
+        return;
+      }
+      if (!State.kun.environment.isWorkState) {
+        registerEvent("turnToExperimentArea")
+        State = turnToExperimentArea(State);
+        console.log("Timeout: " + State.time);
+        setTimeout(function() {
+          State.kun.environment.isWorkState = true;
+          if (State.kun.leftArm.isObserved) {
+            registerEvent("HDCameraEndWatchTube");
+            State = HDCameraEndWatchTube(State);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              State.kun.leftArm.isObserved = false
+            }, State.time * 1000)
+          } else {
+            registerEvent("HDCameraBeginWatchTube");
+            State = HDCameraBeginWatchTube(State);
+            console.log("Timeout: " + State.time);
+            setTimeout(function() {
+              State.kun.leftArm.isObserved = true
+            }, State.time * 1000)
+          }
+        }, State * 1000)
+      } else {
+        if (State.kun.leftArm.isObserved) {
+          registerEvent("HDCameraEndWatchTube");
+          State = HDCameraEndWatchTube(State);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+            State.kun.leftArm.isObserved = false
+          }, State.time * 1000)
+        } else {
+          registerEvent("HDCameraBeginWatchTube");
+          State = HDCameraBeginWatchTube(State);
+          console.log("Timeout: " + State.time);
+          setTimeout(function() {
+            State.kun.leftArm.isObserved = true
+          }, State.time * 1000)
+        }
+      }
     }
     OnClick.LeftArm.GetChemicals = function() {
       menu = document.getElementById("leftarm-acquire-menu-1");

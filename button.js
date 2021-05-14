@@ -196,6 +196,7 @@ function mixLiquid(inputState){
     return state;
 }
 
+// Implemeneted
 function HDCameraBeginWatchTube(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -215,6 +216,7 @@ function HDCameraBeginWatchTube(inputState){
     return state;
 }
 
+// Implemeneted
 function HDCameraEndWatchTube(inputState){
     var {time, ...state} = inputState;
     state.time = 0;
@@ -234,6 +236,7 @@ function HDCameraEndWatchTube(inputState){
     return state;
 }
 
+// Implemeneted
 function turnToStorageArea(inputState){
     var {time, ...state} = inputState;
     state.time = 0;

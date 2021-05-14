@@ -17,6 +17,7 @@ var State = {
       "holding": undefined,
       "isEmpty": false,
       "operationHistory": [],
+      "isObserved": false
     },
     "rightArm": {
       "holding": undefined,
