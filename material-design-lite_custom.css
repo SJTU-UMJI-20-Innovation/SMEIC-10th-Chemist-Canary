@@ -18,6 +18,23 @@
   width: 100%;
 }
 
+#CAMERA {
+  width: 100%;
+  background: #333;
+}
+
+#HDCAMERA {
+  width: 100%;
+  background: #555;
+  display: none;
+}
+
+#THERMAL {
+  width: 100%;
+  background: #acb;
+  display: none;
+}
+
 #CONTROL {
   float: right;
   width: 40%;
