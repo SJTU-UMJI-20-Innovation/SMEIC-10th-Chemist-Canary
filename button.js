@@ -1,25 +1,20 @@
 "use strict"
+const   baseSpeed       = (10.0 / 20.0),
+    liftSpeed       = (18.0 / 30.0),
+    rotationSpeed   = (180.0 / 6.0),
+    timeDelta       = 0.5;
 
-const socket = new WebSocket('ws://192.168.1.3:2051');
-
-const baseSpeed       = (10.0 / 20.0),
-      liftSpeed       = (18.0 / 30.0),
-      rotationSpeed   = (180.0 / 6.0),
-      timeDelta       = 5.0;
-
-function reset() {
-
-};
-
-function leftHandGetTube(state){
+function leftHandGetTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgMs 0 0");
     socket.send("dtSvThree 0 0");
     socket.send("cgSg 1");
     socket.send("rtSvTwo 0 94 1 1");
     state.time += 1;
-    socket.send("mvMvBs 13.5 1 2");
-    state.time += Math.abs(state.base - (13.5)) * baseSpeed;
-    state.base = (13.5);
+    socket.send("mvMvBs 12.5 1 2");
+    state.time += Math.abs(state.base - (12.5)) * baseSpeed;
+    state.base = (12.5);
     socket.send("rtRtBs 0 0.0 2 3");
     state.time += Math.abs(state.leftRotate - (0)) * rotationSpeed;
     state.leftRotate = (0);
@@ -46,11 +41,13 @@ function leftHandGetTube(state){
     return state;
 }
 
-function leftHandReachOutGetNaOH(state){
+function leftHandReachOutGetNaOH(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
-    socket.send("mvMvBs 11.0 1 2");
-    state.time += Math.abs(state.base - (11)) * baseSpeed;
-    state.base = (11);
+    socket.send("mvMvBs 12.0 1 2");
+    state.time += Math.abs(state.base - (12)) * baseSpeed;
+    state.base = (12);
     socket.send("lfLfBs 0 -6 2 3");
     state.time += Math.abs(state.leftLift - (-6)) * liftSpeed;
     state.leftLift = (-6);
@@ -60,21 +57,27 @@ function leftHandReachOutGetNaOH(state){
     return state;
 }
 
-function dropNaOH(state){
-    socket.send("gtLq 3 3");//gtLq 3 (3) -> change
-    state.time += 3;//(3) -> change
+function dropNaOH(inputState, amount){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("gtLq 3 " + amount);
+    state.time += amount;
     state.time += timeDelta;
     return state;
 }
 
-function leftHandFinishGetNaOH(state){
+function leftHandFinishGetNaOH(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("mvAm 0 90.0 4 5");
     state.time += 1;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandGetTube(state){
+function rightHandGetTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgMs 1 0");
     socket.send("cgSg 1");
     socket.send("mvMvBs -26.5 1 2");
@@ -83,20 +86,20 @@ function rightHandGetTube(state){
     socket.send("rtRtBs 1 -0.0 2 3");
     state.time += Math.abs(state.rightRotate - (-0)) * rotationSpeed;
     state.rightRotate = (-0);
-    socket.send("lfLfBs 1 -4.4 3 4");
-    state.time += Math.abs(state.rightLift - (-4.4)) * liftSpeed;
-    state.rightLift = (-4.4);
+    socket.send("lfLfBs 1 -4.5 3 4");
+    state.time += Math.abs(state.rightLift - (-4.5)) * liftSpeed;
+    state.rightLift = (-4.5);
     socket.send("rtSvOne 1 103 4 5");
     state.time += 1;
     socket.send("mvAm 1 77.3 5 6");
     state.time += 1;
     socket.send("dlAm 1 3 6 7");
     state.time += 3;
-    socket.send("rtSvOne 1 88 7 8");
+    socket.send("rtSvOne 1 85 7 8");
     state.time += 1;
     socket.send("cgMs 1 1.0 8 9");
     socket.send("dtSvThree 1 -4 9 10");
-    socket.send("dlAm 1 1 10 11");
+    socket.send("dlAm 1 1 10 11	");
     state.time += 1;
     socket.send("lfLfBs 1 -9.5 11 12");
     state.time += Math.abs(state.rightLift - (-9.5)) * liftSpeed;
@@ -108,7 +111,9 @@ function rightHandGetTube(state){
     return state;
 }
 
-function rightHandReachOutGetCuSO4(state){
+function rightHandReachOutGetCuSO4(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("lfLfBs 1 -7.5 1 2");
     state.time += Math.abs(state.rightLift - (-7.5)) * liftSpeed;
@@ -116,27 +121,33 @@ function rightHandReachOutGetCuSO4(state){
     socket.send("mvMvBs -23.0 2 3");
     state.time += Math.abs(state.base - (-23)) * baseSpeed;
     state.base = (-23);
-    socket.send("mvAm 1 81.5 3 4");
+    socket.send("mvAm 1 82 3 4");
     state.time += 1;
     state.time += timeDelta;
     return state;
 }
 
-function dropCuSO4(state){
-    socket.send("gtLq 2 3");//gtLq 2 (3) -> toChange
-    state.time += 3;//(3) -> toChange
+function dropCuSO4(inputState, amount){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("gtLq 2 " + amount);
+    state.time += amount;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandFinishGetCuSO4(state){
+function rightHandFinishGetCuSO4(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("mvAm 1 90 4 5");
     state.time += 1;
     state.time += timeDelta;
     return state;
 }
 
-function turnToExperimentArea(state){
+function turnToExperimentArea(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("mvMvBs 26 1 1");
     state.time += Math.abs(state.base - (26)) * baseSpeed;
@@ -157,7 +168,9 @@ function turnToExperimentArea(state){
     return state;
 }
 
-function dropLiquid(state){
+function mixLiquid(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtRtBs 1 184 1 2");
     state.time += Math.abs(state.rightRotate - (184)) * rotationSpeed;
@@ -165,7 +178,7 @@ function dropLiquid(state){
     socket.send("lfLfBs 1 -21.5 2 3");
     state.time += Math.abs(state.rightLift - (-21.5)) * liftSpeed;
     state.rightLift = (-21.5);
-    socket.send("mvAm 1 87 3 4");
+    socket.send("mvAm 1 86.8 3 4");
     state.time += 1;
     socket.send("rtSvTwo 1 20 4 5");
     state.time += 1;
@@ -173,7 +186,9 @@ function dropLiquid(state){
     return state;
 }
 
-function HDCameraBeginWatchTube(state){
+function HDCameraBeginWatchTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 1 90 1 2");
     state.time += 1;
@@ -190,7 +205,9 @@ function HDCameraBeginWatchTube(state){
     return state;
 }
 
-function HDCameraEndWatchTube(state){
+function HDCameraEndWatchTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("lfLfBs 1 -20 5 6");
     state.time += Math.abs(state.rightLift - (-20)) * liftSpeed;
     state.rightLift = (-20);
@@ -207,7 +224,9 @@ function HDCameraEndWatchTube(state){
     return state;
 }
 
-function turnToStorageArea(state){
+function turnToStorageArea(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 1 90 1 2");
     state.time += 1;
@@ -229,7 +248,9 @@ function turnToStorageArea(state){
     return state;
 }
 
-function leftHandHandBackTube(state){
+function leftHandReturnTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 0 94 1 1");
     state.time += 1;
@@ -256,7 +277,9 @@ function leftHandHandBackTube(state){
     return state;
 }
 
-function rightHandHandBackTube(state){
+function rightHandReturnTube(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("mvMvBs -26.5 1 2");
     state.time += Math.abs(state.base - (-26.5)) * baseSpeed;
@@ -278,7 +301,9 @@ function rightHandHandBackTube(state){
     return state;
 }
 
-function rightHandGetBeaker(state){
+function rightHandGetBeaker(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgMs 1 0");
     socket.send("dtSvThree 1 0");
     socket.send("cgSg 1");
@@ -312,7 +337,9 @@ function rightHandGetBeaker(state){
     return state;
 }
 
-function rightHandReachOutGetHCl(state){
+function rightHandReachOutGetH2O2(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 1 88 1 1");
     state.time += 1;
@@ -328,14 +355,18 @@ function rightHandReachOutGetHCl(state){
     return state;
 }
 
-function dropHCl(state){
-    socket.send("gtLq 1 5");
-    state.time += 5;
+function dropH2O2(inputState, amount){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("gtLq 1 " + amount);
+    state.time += amount;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandFinishGetHCl(state){
+function rightHandFinishGetH2O2(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("mvAm 1 90 4 5");
     state.time += 1;
     socket.send("lfLfBs 1 -6 5 6");
@@ -345,7 +376,9 @@ function rightHandFinishGetHCl(state){
     return state;
 }
 
-function rightHandReachOutGetCaCO3(state){
+function rightHandReachOutGetMnO2(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 1 88 1 1");
     state.time += 1;
@@ -363,14 +396,18 @@ function rightHandReachOutGetCaCO3(state){
     return state;
 }
 
-function dropCaCO3(state){
-    socket.send("gtSl 4");
-    state.time += 4;
+function dropMnO2(inputState, amount){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("gtSl " + amount);
+    state.time += amount;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandFinishGetCaCO3SeeHDCamera(state){
+function rightHandFinishGetMnO2BeginWatch(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("mvAm 1 90 6 7");
     state.time += 1;
     socket.send("lfLfBs 1 -4 7 8");
@@ -382,20 +419,15 @@ function rightHandFinishGetCaCO3SeeHDCamera(state){
     state.time += Math.abs(state.rightRotate - (160)) * rotationSpeed;
     state.rightRotate = (160);
     socket.send("dtSvThree 1 10 11 12");
-    socket.send("mvAm 1 90 12 13");
+    socket.send("mvAm 1 82 12 13");
     state.time += 1;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandFinishHDCameraThermal(state){
-    socket.send("mvAm 1 82");
-    state.time += 1;
-    state.time += timeDelta;
-    return state;
-}
-
-function rightHandHandBackBeaker(state){
+function rightHandReturnBeaker(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("dtSvThree 1 0 1 2");
     socket.send("mvAm 1 90 2 3");
@@ -434,7 +466,9 @@ function rightHandHandBackBeaker(state){
     return state;
 }
 
-function leftHandGetErlenmeyerFlask(state){
+function leftHandGetErlenmeyerFlask(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgMs 0 0");
     socket.send("dtSvThree 0 0");
     socket.send("cgSg 1");
@@ -470,7 +504,9 @@ function leftHandGetErlenmeyerFlask(state){
     return state;
 }
 
-function rightHandStartObservePipe(state){
+function rightHandStartObserveTitration(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtRtBs 1 160 1 2");
     state.time += Math.abs(state.rightRotate - (160)) * rotationSpeed;
@@ -497,15 +533,19 @@ function rightHandStartObservePipe(state){
     return state;
 }
 
-function rightHandObservePipe(state){
-    socket.send("lfLfBs 1 -45");//lfLfBs 1 -(45) -> toChange -6 ~ -50
-    state.time += Math.abs(state.rightLift - (-45)) * liftSpeed;//(-45) -> toChange
-    state.rightLift = (-45);//(-45) -> change
+function rightHandObserveTitration(inputState, position){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("lfLfBs 1 " + position);
+    state.time += Math.abs(state.rightLift - position) * liftSpeed;
+    state.rightLift = position;
     state.time += timeDelta;
     return state;
 }
 
-function rightHandStopObservePipe(state){
+function rightHandStopObserveTitration(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtRtBs 1 170 1 2");
     state.time += Math.abs(state.rightRotate - (170)) * rotationSpeed;
@@ -531,38 +571,28 @@ function rightHandStopObservePipe(state){
     return state;
 }
 
-function shake(state){
+function shake(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("rtSvTwo 0 99");
-    // state.time += 1;
     socket.send("rtSvTwo 0 89");
-    // state.time += 1;
     socket.send("rtSvTwo 0 99");
-    // state.time += 1;
     socket.send("rtSvTwo 0 89");
-    // state.time += 1;
     socket.send("rtSvTwo 0 94");
-    // state.time += 1;
-    // state.time += timeDelta;
     return state;
 }
 
-function rotatePipeValve(state){
-    socket.send("cgBr 0");//cgBr (0) -> change
-/*
-    0 -> 30
-    40 -> 35
-    45 -> 40
-    51 -> 45
-    59 -> 50
-    65 -> 55
-    75 -> 60
-    45->临界值
-*/
-    // state.time += timeDelta;
+function rotatePipeValve(inputState, position){
+    var {time, ...state} = inputState;
+    state.time = 0;
+    socket.send("cgBr " + position);
+    state.time += timeDelta;
     return state;
 }
 
-function leftHandHandErlenmeyerFlask(state){
+function leftHandReturnErlenmeyerFlask(inputState){
+    var {time, ...state} = inputState;
+    state.time = 0;
     socket.send("cgSg 1");
     socket.send("rtSvTwo 0 94 1 1");
     state.time += 1;
@@ -585,4 +615,3 @@ function leftHandHandErlenmeyerFlask(state){
     state.time += timeDelta;
     return state;
 }
-

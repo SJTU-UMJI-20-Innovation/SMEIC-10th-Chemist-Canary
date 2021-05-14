@@ -1,4 +1,4 @@
-State = {
+var State = {
   "leftRotate": 0,
   "rightRotate": 0,
   "leftLift": 0,
