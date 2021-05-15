@@ -79,8 +79,8 @@ Experiments = [
 
 function socketInit() {
   console.log("CALLED:\tsocketInit");
-  // var socket = new WebSocket("ws://192.168.1.3:2501");
-  var socket = new WebSocket("ws://localhost:11451");
+  var socket = new WebSocket("ws://192.168.1.3:2051");
+  // var socket = new WebSocket("ws://localhost:11451");
   return socket;
 }
 

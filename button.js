@@ -100,7 +100,7 @@ function rightHandGetTube(inputState){
     state.time += 1;
     socket.send("dlAm 1 3 6 7");
     state.time += 3;
-    socket.send("rtSvOne 1 85 7 8");
+    socket.send("rtSvOne 1 60 7 8");
     state.time += 1;
     socket.send("cgMs 1 1.0 8 9");
     socket.send("dtSvThree 1 -4 9 10");
@@ -335,7 +335,7 @@ function rightHandGetBeaker(inputState){
     state.time += 1;
     socket.send("dlAm 1 3 5 6");
     state.time += 3;
-    socket.send("rtSvOne 1 85 6 7");
+    socket.send("rtSvOne 1 60 6 7");
     state.time += 1;
     socket.send("cgMs 1 3 7 8");
     socket.send("mvAm 1 81 8 9");
