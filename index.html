@@ -232,6 +232,22 @@
                           </button>
                         </span>
                       </li>
+                      <!-- ACTIONS: SHAKE -->
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <span>Shake
+                          </span>
+                          <span class="mdl-list__item-sub-title">(During titration)
+                          </span>
+                        </span>
+                        <span class="mdl-list__item-secondary-action">
+                          <span class="mdl-list__item-secondary-action">
+                            <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--raised mdl-button--colored" onmousedown=OnClick.Environment.ShakeOn() onmouseup=OnClick.Environment.ShakeOff()>
+                              Toggle
+                            </button>
+                          </span>
+                        </span>
+                      </li>
                       <!-- ACTIONS END -->
                     </div>
                   </section>
@@ -722,7 +738,7 @@
         notify("Left arm has no container");
         return;
       }
-      var t = Number(document.getElementById("leftarm-acquire-quantity-slider").value) / 4
+      var t = Number(document.getElementById("leftarm-acquire-quantity-slider").value) * 0.5
       if (t > 1) {
         t = 1;
       }
@@ -808,7 +824,7 @@
         notify("Right arm has no container");
         return;
       }
-      var t = Number(document.getElementById("rightarm-acquire-quantity-slider").value) / 4
+      var t = Number(document.getElementById("rightarm-acquire-quantity-slider").value) * 0.5
       if (t > 1) {
         t = 1;
       }
