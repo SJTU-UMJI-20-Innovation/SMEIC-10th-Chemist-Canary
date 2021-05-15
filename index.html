@@ -182,7 +182,7 @@
                           <span class="mdl-list__item-primary-content">
                             <span>Acquire
                             </span>
-                            <span class="mdl-list__item-sub-title" id="leftarm-acquire-quantity-display">Amount: Little
+                            <span class="mdl-list__item-sub-title" id="leftarm-acquire-quantity-display">Amount: 1
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
@@ -202,7 +202,7 @@
                             </li>
                           </ul>
                         </li>
-                        <input class="mdl-slider mdl-js-slider" id="leftarm-acquire-quantity-slider" type="range" min="0" max="3" value="1" onchange=OnClick.LeftArm.AcquireQuantityUpdate()>
+                        <input class="mdl-slider mdl-js-slider" id="leftarm-acquire-quantity-slider" type="range" min="0" max="5" value="1" onchange=OnClick.LeftArm.AcquireQuantityUpdate()>
                       </ul>
                       <!-- ACTION: MIX -->
                       <li class="mdl-list__item mdl-list__item--two-line">
@@ -237,13 +237,13 @@
                         <span class="mdl-list__item-primary-content">
                           <span>Shake
                           </span>
-                          <span class="mdl-list__item-sub-title">(During titration)
+                          <span class="mdl-list__item-sub-title">Use during titration
                           </span>
                         </span>
                         <span class="mdl-list__item-secondary-action">
                           <span class="mdl-list__item-secondary-action">
-                            <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--raised mdl-button--colored" onmousedown=OnClick.Environment.ShakeOn() onmouseup=OnClick.Environment.ShakeOff()>
-                              Toggle
+                            <button class="mdl-button mdl-js-ripple-effect mdl-js-button mdl-button--raised mdl-button--colored" onmousedown=OnClick.LeftArm.ShakeOn() onmouseup=OnClick.LeftArm.ShakeOff() onclick=OnClick.LeftArm.Shake()>
+                              Shake
                             </button>
                           </span>
                         </span>
@@ -283,7 +283,7 @@
                           <span class="mdl-list__item-primary-content">
                             <span>Acquire
                               </span>
-                            <span class="mdl-list__item-sub-title" id="rightarm-acquire-quantity-display">Amount: Little
+                            <span class="mdl-list__item-sub-title" id="rightarm-acquire-quantity-display">Amount: 1
                             </span>
                           </span>
                           <span class="mdl-list__item-secondary-action">
@@ -303,7 +303,7 @@
                             </li>
                           </ul>
                         </li>
-                        <input class="mdl-slider mdl-js-slider" id="rightarm-acquire-quantity-slider" type="range" min="0" max="3" value="1" onchange=OnClick.RightArm.AcquireQuantityUpdate()>
+                        <input class="mdl-slider mdl-js-slider" id="rightarm-acquire-quantity-slider" type="range" min="0" max="5" value="1" onchange=OnClick.RightArm.AcquireQuantityUpdate()>
                       </ul>
                       <!-- ACTIONS END -->
                     </div>
@@ -586,6 +586,40 @@
         State.kun.environment.display = "camera"
       }
     }
+    OnClick.LeftArm.Shake = function() {
+      var available = queryStatus();
+      if (!available) {
+        DIALOG_forcePass.showModal()
+        return
+      }
+      if (!State.kun.leftArm.holding) {
+        notify("Left arm has no container");
+        return;
+      }
+      // No ongoing task: get current workstate
+      var workState = State.kun.environment.isWorkState
+      if (!workState) {
+        // Currently not workstate, do enter workstate
+        registerEvent("turnToExperimentArea");
+        State = turnToExperimentArea(State);
+        console.log("Timeout: " + State.time)
+        setTimeout(function() {
+          State.kun.environment.isWorkState = true;
+          State = shake(State);
+          State.time = 0;
+        }, State.time * 1000)
+      } else {
+        // Currently not workstate, do enter workstate
+        State = shake(State);
+        State.time = 0;
+      }
+    }
+    OnClick.LeftArm.ShakeOn = function() {
+      
+    }
+    OnClick.LeftArm.ShakeOff = function() {
+      // notify("shake off")
+    }
     OnClick.LeftArm.Hold = function(item) {
       var available = queryStatus();
       if (!available) {
@@ -738,10 +772,7 @@
         notify("Left arm has no container");
         return;
       }
-      var t = Number(document.getElementById("leftarm-acquire-quantity-slider").value) * 0.5
-      if (t > 1) {
-        t = 1;
-      }
+      var t = Number(document.getElementById("leftarm-acquire-quantity-slider").value)
       if (t <= 0) {
         return;
       }
@@ -760,6 +791,7 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
               // 2. dropNaOH
+              t = t * Chemicals[0].max
               registerEvent("dropNaOH[param1="+t+"]");
               State = dropNaOH(State, t);
               console.log("Timeout: " + State.time);
@@ -791,6 +823,7 @@
           console.log("Timeout: " + State.time);
           setTimeout(function() {
             // 2. dropNaOH
+            t = t * Chemicals[0].max
             registerEvent("dropNaOH[param1="+t+"]");
             State = dropNaOH(State, t);
             console.log("Timeout: " + State.time);
@@ -848,6 +881,7 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
               // 2. dropCuSO4
+              t = t * Chemicals[1].max
               registerEvent("dropCuSO4[param1="+t+"]");
               State = dropCuSO4(State, t);
               console.log("Timeout: " + State.time);
@@ -870,6 +904,7 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
               // 2. dropH2O2
+              t = t * Chemicals[2].max
               registerEvent("dropH2O2[param1="+t+"]");
               State = dropH2O2(State, t);
               console.log("Timeout: " + State.time);
@@ -892,6 +927,7 @@
             console.log("Timeout: " + State.time);
             setTimeout(function() {
             // 2. dropMnO2
+              t = t * Chemicals[3].max
               registerEvent("dropMnO2[param1="+t+"]");
               State = dropMnO2(State, t);
               console.log("Timeout: " + State.time);
@@ -919,6 +955,7 @@
           console.log("Timeout: " + State.time);
           setTimeout(function() {
             // 2. dropCuSO4
+            t = t * Chemicals[1].max
             registerEvent("dropCuSO4[param1="+t+"]");
             State = dropCuSO4(State, t);
             console.log("Timeout: " + State.time);
@@ -942,6 +979,7 @@
           console.log("Timeout: " + State.time);
           setTimeout(function() {
             // 2. dropH2O2
+            t = t * Chemicals[2].max
             registerEvent("dropH2O2[param1="+t+"]");
             State = dropH2O2(State, t);
             console.log("Timeout: " + State.time);
@@ -964,6 +1002,7 @@
           console.log("Timeout: " + State.time);
           setTimeout(function() {
           // 2. dropMnO2
+            t = t * Chemicals[3].max
             registerEvent("dropMnO2[param1="+t+"]");
             State = dropMnO2(State, t);
             console.log("Timeout: " + State.time);
@@ -1101,13 +1140,19 @@
     OnClick.LeftArm.AcquireQuantityUpdate = function() {
       var i = Number(document.getElementById("leftarm-acquire-quantity-slider").value)
       if (i == 1) {
-        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: Little";
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 1";
         document.getElementById("leftarm-acquire-menu-button").disabled = false;
       } else if (i == 2) {
-        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: Some";
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 2";
         document.getElementById("leftarm-acquire-menu-button").disabled = false;
       } else if (i == 3) {
-        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: A lot";
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 3";
+        document.getElementById("leftarm-acquire-menu-button").disabled = false;
+      } else if (i == 4) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 4";
+        document.getElementById("leftarm-acquire-menu-button").disabled = false;
+      } else if (i == 5) {
+        document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 5";
         document.getElementById("leftarm-acquire-menu-button").disabled = false;
       } else if (i == 0) {
         document.getElementById("leftarm-acquire-quantity-display").innerHTML="Amount: 0";
@@ -1117,13 +1162,19 @@
     OnClick.RightArm.AcquireQuantityUpdate = function() {
       var i = Number(document.getElementById("rightarm-acquire-quantity-slider").value)
       if (i == 1) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Little";
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 1";
         document.getElementById("rightarm-acquire-menu-button").disabled = false;
       } else if (i == 2) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: Some";
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 2";
         document.getElementById("rightarm-acquire-menu-button").disabled = false;
       } else if (i == 3) {
-        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: A lot";
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 3";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 4) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 4";
+        document.getElementById("rightarm-acquire-menu-button").disabled = false;
+      } else if (i == 5) {
+        document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 5";
         document.getElementById("rightarm-acquire-menu-button").disabled = false;
       } else if (i == 0) {
         document.getElementById("rightarm-acquire-quantity-display").innerHTML="Amount: 0";
