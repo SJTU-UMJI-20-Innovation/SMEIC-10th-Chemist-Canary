@@ -2,7 +2,7 @@
 const   baseSpeed       = (10.0 / 10.0),
     liftSpeed       = (18.0 / 30.0),
     rotationSpeed   = (180.0 / 6.0),
-    timeDelta       = -100;
+    timeDelta       = 0;
 
 // Implemented
 function leftHandGetTube(inputState){
@@ -21,7 +21,7 @@ function leftHandGetTube(inputState){
     state.leftRotate = (0);
     socket.send("lfLfBs 0 -1.4 3 4");
     state.time += Math.abs(state.leftLift - (-1.4)) / liftSpeed;
-    state.leftLift = (-1.4);
+    state.leftLift = (-1.8);
     socket.send("rtSvOne 0 103 4 5");
     state.time += 1;
     socket.send("mvAm 0 77.5 5 6");
